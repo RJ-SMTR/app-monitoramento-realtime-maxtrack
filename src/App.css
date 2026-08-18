@@ -41,25 +41,6 @@
       border-radius: .4rem;
 
 }
-.tablesBRT{
-  z-index: 11111;
-  position: fixed;
-  color: black;
-  top: 120px;
-  right: 20px ;
-
-}
-.tablesBRT table{
-  padding: .4rem;
-  background: white;
-  border-radius: .4rem;
-}
-.tablesBRT label{
-    padding: .4rem;
-      background: white;
-      border-radius: .4rem;
-
-}
 .select{
   max-width: 208px !important;
 }

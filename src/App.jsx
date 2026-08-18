@@ -3,14 +3,12 @@ import { useContext, useState} from "react"
 import './App.css'
 import { useMap } from 'react-leaflet/hooks'
 import { MovingMarkerContext } from "./hooks/getMovingMarkers"
-import BusMarker from "./components/MovingMarkersBRT"
 import BusMarkerSPPO from "./components/MovingMarkerSPPO"
 import Tables from "./components/table"
-import TablesBRT from "./components/tableBRT"
 import Logos from "./components/logos"
 
 function App() {
-  const { tracked, trackedSPPO, selectedLinhas, selectedBRT, showSPPO, showBRT, paintColors, enabledColors } = useContext(MovingMarkerContext)
+  const { trackedSPPO, selectedLinhas, showSPPO, paintColors, enabledColors } = useContext(MovingMarkerContext)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const toggleDropdown = () => {
@@ -32,7 +30,6 @@ function App() {
     <Logos/>
 <div className="tables hidden sm:block">
       <Tables/>
-      <TablesBRT/>
 </div>
       <button
         type="button"
@@ -53,8 +50,6 @@ function App() {
             aria-labelledby="dropdown-menu"
             id="dropdown-menu">
                 <Tables />
-            
-                <TablesBRT/>
             </div>
         )}
       </div>
@@ -67,14 +62,6 @@ function App() {
           subdomains="abcd"
         />
         <div id="map"></div>
-      <LayerGroup>
-          {showBRT && tracked ? tracked.filter(e => !selectedBRT?.length || selectedBRT?.some(selected => selected.value === e.linha))
-            .map(e => (
-              <div key={e.code}>
-                <BusMarker key={e.codigo} id={e.codigo} data={e} />
-              </div>
-            )) : <></>}
-      </LayerGroup>
       <LayerGroup>
           {showSPPO && trackedSPPO
             ? trackedSPPO
