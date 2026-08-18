@@ -20,3 +20,4 @@ jobs:
       secret_name: app-monitoramento-realtime-maxtrack-ingress
       replicas: 6
     secrets: inherit
+
