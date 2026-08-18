@@ -10,8 +10,8 @@ import { format} from "date-fns";
 
 export default function BusMarkerSPPO({ id, data, color }) {
     const [prevPositions, setPrevPositions] = useState({});
-    const latitude = parseFloat(data.latitude.replace(',', '.'));
-    const longitude = parseFloat(data.longitude.replace(',', '.'));
+    const latitude = data.latitude;
+    const longitude = data.longitude;
     const time =  new Date(data.datetime)
     const formattedHora = format(time, "yyyy-MM-dd HH:mm:ss")
     const trimmed = formattedHora.match(/(\d{2}:\d{2}:\d{2})/)

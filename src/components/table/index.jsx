@@ -3,7 +3,7 @@ import { MovingMarkerContext } from "../../hooks/getMovingMarkers"
 import Select from 'react-select';
 
 function Tables() {
-    const {tracked, trackedSPPO, selectedLinhas, setSelectedLinhas, setShowSPPO, setShowBRT, showBRT, showSPPO, enabledColors, setEnabledColors, colors, paintColors } = useContext(MovingMarkerContext)
+    const {trackedSPPO, selectedLinhas, setSelectedLinhas, setShowSPPO, showSPPO, enabledColors, setEnabledColors, colors, paintColors } = useContext(MovingMarkerContext)
     const [allColors, setAllColors] = useState(true)
     const toggleColor = (color) => {
         setEnabledColors((prev) =>(
@@ -118,27 +118,16 @@ function Tables() {
           <table className=" border-separate border-spacing-1 ">
             <thead>
                 <th>
-                    BRT
-                </th>
-                <th>
-                  SPPO
+                  Maxtrack
                 </th>
             </thead>
             <tbody>
                 <tr>
-                      <td> {tracked.length}</td>
-                      
                       <td>
                           {trackedSPPO.length}
                       </td>
                 </tr>
                 <tr>
-                      <td>  <input
-                          type="checkbox"
-                          checked={showBRT}
-                          onChange={() => setShowBRT(!showBRT)}
-                      /></td>
-                      
                       <td>
                           <input
                               type="checkbox"
@@ -148,13 +137,13 @@ function Tables() {
                       </td>
                 </tr>
 
-                
+
             </tbody>
         </table >
           <div className="my-10">
              <div className="my-10">
              <label className="block mb-2">
-                Selecionar Linha SPPO:
+                Selecionar Linha:
             </label>
                 <Select
                     value={selectedLinhas}
@@ -169,7 +158,7 @@ function Tables() {
          </div>
           <table className=" border-separate border-spacing-1 ">
               <thead>
-                <tr>SPPO</tr>
+                <tr>Maxtrack</tr>
                   <tr>
                       <th>Linha</th>
                       <th>Contagem</th>
