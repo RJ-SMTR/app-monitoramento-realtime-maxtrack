@@ -1,49 +1,33 @@
 /* eslint-disable react/prop-types */
 import axios from "axios";
-import { format, subMinutes } from "date-fns";
 import { createContext, useEffect, useState } from "react";
 
 export const GPSContext = createContext()
 
+// Em dev, as chamadas passam pelo proxy do Vite (vite.config.js) para evitar CORS.
+const API_BASE = import.meta.env.DEV ? '/mobilidade-api' : 'https://dados.mobilidade.rio'
+
 export function GPSProvider({ children }) {
-    const [realtimeBrt, setRealtimeBrt] = useState([])
     const [realtimeSPPO, setRealtimeSPPO] = useState([])
     const [paintColors, setPaintColors] = useState({})
 
-    let allBuses = [];
-
-    async function getGPS() {
-        await axios.get('https://dados.mobilidade.rio/gps/brt').then(({ data }) => {
-            data.veiculos.forEach((item) => {
-                allBuses.push(item);
-            });
-            setRealtimeBrt([...allBuses]);
-            allBuses = [];
-        });
-    }
-    let allSPPO = []
     async function getSPPO(){
-        const currentDate = new Date();
+        const datetimeFim = new Date();
+        const datetimeInicio = new Date(datetimeFim.getTime() - 5 * 60 * 1000);
+        const toApiDatetime = (date) => date.toISOString().slice(0, 19) + 'Z';
 
-        const fiveMinutesAgo = subMinutes(currentDate, 5);
+        const params = new URLSearchParams({
+            datetime_inicio: toApiDatetime(datetimeInicio),
+            datetime_fim: toApiDatetime(datetimeFim),
+        });
 
-        const formattedDataInicial = format(fiveMinutesAgo, "yyyy-MM-dd+HH:mm:ss");
-        const formattedDataFinal = format(currentDate, "yyyy-MM-dd+HH:mm:ss");
-
-        await axios.get(`https://dados.mobilidade.rio/gps/sppo?&dataInicial=${formattedDataInicial}&dataFinal=${formattedDataFinal}`)
+        await axios.get(`${API_BASE}/sppo/maxtrack/gps?${params.toString()}`)
             .then((response) => {
-                response.data.forEach((item) => {
-                    const new_item = item;
-                    new_item.latitude = new_item.latitude.toString();
-                    new_item.longitude = new_item.longitude.toString();
-                    allSPPO.push(new_item)
-                })
-                setRealtimeSPPO([...allSPPO])
-                allSPPO = []
+                setRealtimeSPPO(response.data)
             })
     }
     async function getPaintColors() {
-        const { data } = await axios.get('https://dados.mobilidade.rio/api/monitoramento-realtime/');
+        const { data } = await axios.get(`${API_BASE}/api/monitoramento-realtime/`);
         const allColors = {};
         data.forEach((item) => {
             allColors[item.ordem] = item;
@@ -53,11 +37,10 @@ export function GPSProvider({ children }) {
 
     function getGPSAndSPPO() {
         getPaintColors()
-        getGPS()
         getSPPO()
     }
 
-   
+
     useEffect(() => {
        getGPSAndSPPO()
 
@@ -67,7 +50,7 @@ export function GPSProvider({ children }) {
     }, []);
 
     return (
-        <GPSContext.Provider value={{ realtimeBrt, getGPS, realtimeSPPO, paintColors }}>
+        <GPSContext.Provider value={{ realtimeSPPO, paintColors }}>
             {children}
         </GPSContext.Provider>
     )

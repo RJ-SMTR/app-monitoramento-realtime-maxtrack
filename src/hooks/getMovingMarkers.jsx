@@ -25,12 +25,9 @@ export function MovingMarkerProvider({ children }) {
         "Demais": "#FFFFFF",
 }
 
-    const { realtimeBrt, realtimeSPPO, paintColors } = useContext(GPSContext)
-    const [tracked, setTracked] = useState([])
+    const { realtimeSPPO, paintColors } = useContext(GPSContext)
     const [selectedLinhas, setSelectedLinhas] = useState(null)
-    const [selectedBRT, setSelectedBRT] = useState(null)
     const [trackedSPPO, setTrackedSPPO] = useState([])
-    const [showBRT, setShowBRT] = useState(true);
     const [showSPPO, setShowSPPO] = useState(true);
     const [enabledColors, setEnabledColors] = useState(Object.fromEntries( Object.values(colors).map(color => [color, true])));
 
@@ -44,7 +41,7 @@ export function MovingMarkerProvider({ children }) {
     }
 
     useEffect(() => {
-        if (realtimeBrt && realtimeSPPO) {
+        if (realtimeSPPO) {
             const max_latitude = -22.59
             const min_latitude = -23.13
             const max_longitude = -43.0
@@ -53,25 +50,6 @@ export function MovingMarkerProvider({ children }) {
 
             const wktExample = wktRio
             const geoJsonFromWkt = wktToGeoJson(wktExample)
-
-            const uniqueTrackedItems = realtimeBrt.reduce((uniqueItems, item) => {
-                if (!uniqueItems.some(existingItem => existingItem.codigo === item.codigo)) {
-                    uniqueItems.push(item);
-                }
-                return uniqueItems;
-            }, []);
-
-
-
-            const filteredBRT = uniqueTrackedItems.filter(item => {
-                const point = turf.point([item.longitude, item.latitude]);
-
-                return turf.booleanPointInPolygon(point, geoJsonFromWkt) && min_latitude <= item.latitude && item.latitude <= max_latitude && min_longitude <= item.longitude && item.longitude <= max_longitude && item.codigo.startsWith('90') || item.codigo.startsWith('E90') || item.codigo.startsWith('70') ;
-
-            });
-            const sortedBrt = filteredBRT.sort((a, b) => a.codigo - b.codigo)
-            setTracked(sortedBrt);
-
 
             const uniqueItems = realtimeSPPO.reduce((uniqueItems, item) => {
                 const existingItemIndex = uniqueItems.findIndex(existingItem => existingItem.id_veiculo === item.id_veiculo)
@@ -90,8 +68,8 @@ export function MovingMarkerProvider({ children }) {
                 return uniqueItems;
             }, []);
             const filteredSPPO = uniqueItems.filter(item => {
-                const latitude = parseFloat(item.latitude.replace(',', '.'));
-                const longitude = parseFloat(item.longitude.replace(',', '.'));
+                const latitude = item.latitude;
+                const longitude = item.longitude;
                 const point = turf.point([longitude, latitude]);
 
                 return turf.booleanPointInPolygon(point, geoJsonFromWkt) && min_latitude <= latitude && latitude <= max_latitude && min_longitude <= longitude && longitude <= max_longitude;
@@ -99,9 +77,7 @@ export function MovingMarkerProvider({ children }) {
             setTrackedSPPO(filteredSPPO);
 
         }
-    }, [realtimeBrt, realtimeSPPO]);
-
-
+    }, [realtimeSPPO]);
 
 
 
@@ -119,7 +95,7 @@ export function MovingMarkerProvider({ children }) {
 
 
     return (
-        <MovingMarkerContext.Provider value={{ tracked, setTracked, trackedSPPO, selectedLinhas, setSelectedLinhas, selectedBRT, setSelectedBRT, showBRT, setShowBRT, showSPPO, setShowSPPO, paintColors, enabledColors, setEnabledColors, colors }}>
+        <MovingMarkerContext.Provider value={{ trackedSPPO, selectedLinhas, setSelectedLinhas, showSPPO, setShowSPPO, paintColors, enabledColors, setEnabledColors, colors }}>
             {children}
         </MovingMarkerContext.Provider>
     )
