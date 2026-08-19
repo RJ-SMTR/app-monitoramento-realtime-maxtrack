@@ -21,7 +21,7 @@ export function GPSProvider({ children }) {
             datetime_fim: toApiDatetime(datetimeFim),
         });
 
-        await axios.get(`${API_BASE}/sppo/maxtrack/gps?${params.toString()}`)
+        await axios.get(`${API_BASE}/sistema-rio/maxtrack/gps?${params.toString()}`)
             .then((response) => {
                 setRealtimeSPPO(response.data)
             })
